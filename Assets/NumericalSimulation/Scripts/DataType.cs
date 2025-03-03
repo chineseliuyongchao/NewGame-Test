@@ -30,6 +30,11 @@ namespace NumericalSimulation.Scripts
         public int attack;
 
         /// <summary>
+        /// 攻击范围
+        /// </summary>
+        public int attackRange;
+
+        /// <summary>
         /// 冲锋加成
         /// </summary>
         public int charge;
@@ -123,8 +128,10 @@ namespace NumericalSimulation.Scripts
     /// <summary>
     /// 在攻击模拟时记录一个单位的实时属性
     /// </summary>
-    public class ArmData
+    public class UnitData
     {
+        public ArmDataType armDataType;
+
         /// <summary>
         /// 兵种id
         /// </summary>
@@ -185,7 +192,15 @@ namespace NumericalSimulation.Scripts
         public int NowMorale
         {
             get => _nowMorale;
-            set => _nowMorale = value;
+            set
+            {
+                if (value < 0)
+                {
+                    value = 0;
+                }
+
+                _nowMorale = value;
+            }
         }
 
         private int _nowFatigue;
@@ -196,7 +211,15 @@ namespace NumericalSimulation.Scripts
         public int NowFatigue
         {
             get => _nowFatigue;
-            set => _nowFatigue = value;
+            set
+            {
+                if (value > armDataType.maximumFatigue)
+                {
+                    value = armDataType.maximumFatigue;
+                }
+
+                _nowFatigue = value;
+            }
         }
 
         /// <summary>
@@ -209,31 +232,33 @@ namespace NumericalSimulation.Scripts
         /// </summary>
         public bool isStick;
 
-        public ArmData(ArmData armData) 
+        public UnitData(UnitData unitData)
         {
-            armId = armData.armId;
-            _nowHp = armData._nowHp;
-            _nowTroops = armData._nowTroops;
-            _nowAmmo = armData._nowAmmo;
-            _nowMorale = armData._nowMorale;
-            _nowFatigue = armData._nowFatigue;
-            isCharge = armData.isCharge;
-            isStick = armData.isStick;
+            armDataType = unitData.armDataType;
+            armId = unitData.armId;
+            _nowHp = unitData._nowHp;
+            _nowTroops = unitData._nowTroops;
+            _nowAmmo = unitData._nowAmmo;
+            _nowMorale = unitData._nowMorale;
+            _nowFatigue = unitData._nowFatigue;
+            isCharge = unitData.isCharge;
+            isStick = unitData.isStick;
         }
 
-        public ArmData(ArmDataType armDataType, int id)
+        public UnitData(ArmDataType armDataType, int id)
         {
+            this.armDataType = armDataType;
             armId = id;
             _nowHp = armDataType.totalHp;
             _nowTroops = armDataType.totalTroops;
             _nowAmmo = armDataType.ammo;
             _nowMorale = armDataType.maximumMorale;
-            _nowFatigue = armDataType.maximumFatigue;
+            _nowFatigue = 0;
             isCharge = false;
             isStick = false;
         }
 
-        public void Reset(ArmData data)
+        public void Reset(UnitData data)
         {
             armId = data.armId;
             _nowHp = data._nowHp;
