@@ -510,7 +510,7 @@ namespace NumericalSimulation.Scripts.Prefab
         {
             float fatigueRatio =
                 unitData.NowFatigue / (float)_armDataTypes[unitData.armId].maximumFatigue - 0.5f; //计算疲劳值影响参数
-            float moraleLossRatio = Math.Min(0, fatigueRatio * fatigueRatio);
+            float moraleLossRatio = Math.Max(0, fatigueRatio * fatigueRatio);
             unitData.NowMorale -= (int)(moraleLossRatio * INIT_MORALE);
         }
 
