@@ -448,8 +448,8 @@ namespace NumericalSimulation.Scripts.Prefab
         /// </summary>
         private int ComputeCorrectFatigue(int value, UnitData unitData)
         {
-            return (int)(value * (1 - unitData.NowFatigue /
-                (float)_armDataTypes[unitData.armId].maximumFatigue * 0.5f));
+            return (int)(value * Math.Min(1,
+                1.2f - unitData.NowFatigue / (float)_armDataTypes[unitData.armId].maximumFatigue * 0.5f));
         }
 
         /// <summary>
@@ -497,7 +497,7 @@ namespace NumericalSimulation.Scripts.Prefab
         private void AttackChangeMorale(int lossTroops, UnitData unitData)
         {
             int afterAttackLossTroops = lossTroops + unitData.NowTroops; //计算损失之前单位的人数
-            float moraleRatio = lossTroops / (float)afterAttackLossTroops * 2; //计算损失比例参数
+            float moraleRatio = lossTroops / (float)afterAttackLossTroops * 5; //计算损失比例参数
             float moraleLossRatio = moraleRatio * moraleRatio; //计算作战意志损失比例
             unitData.NowMorale -= (int)(moraleLossRatio * INIT_MORALE);
         }
@@ -531,28 +531,17 @@ namespace NumericalSimulation.Scripts.Prefab
         /// 己方将领阵亡影响作战意志
         /// </summary>
         /// <param name="unitData"></param>
-        private void OurGeneralDieChangeMorale(UnitData unitData)
+        /// <param name="isOur"></param>
+        private void GeneralDieChangeMorale(UnitData unitData, bool isOur)
         {
-            unitData.NowMorale -= (int)(0.3f * INIT_MORALE);
-        }
-
-        /// <summary>
-        /// 敌方将领阵亡影响作战意志
-        /// </summary>
-        /// <param name="unitData"></param>
-        private void EnemyGeneralDieChangeMorale(UnitData unitData)
-        {
-            unitData.NowMorale += (int)(0.2f * INIT_MORALE);
-        }
-
-        /// <summary>
-        /// 被包围影响作战意志
-        /// </summary>
-        /// <param name="surroundRatio">被包围比例（0.33-1，即从两面被围到六面全被围）</param>
-        /// <param name="unitData"></param>
-        private void SurroundChangeMorale(float surroundRatio, UnitData unitData)
-        {
-            unitData.NowMorale -= (int)(0.25f * surroundRatio * INIT_MORALE);
+            if (isOur)
+            {
+                unitData.NowMorale -= (int)(0.3f * INIT_MORALE);
+            }
+            else
+            {
+                unitData.NowMorale += (int)(0.2f * INIT_MORALE);
+            }
         }
 
         /// <summary>
